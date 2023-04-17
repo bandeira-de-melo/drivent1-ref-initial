@@ -27,3 +27,12 @@ export type RequestError = {
   name: string;
   message: string;
 };
+
+export type Ticket = {
+  id: number;
+  status: 'RESERVED' | 'PAID';
+  tickeTypeId: number;
+  enrollmentId: number;
+  createdAt?: Date | string;
+  updatedAt: Date | string;
+};
