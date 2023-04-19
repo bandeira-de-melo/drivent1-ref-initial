@@ -1,6 +1,6 @@
-import ticketRepository from '../tickets-repository';
-import { PaymentPost } from '@/protocols';
+import { TicketStatus } from '@prisma/client';
 import { prisma } from '@/config';
+import { CardInfoType, PaymentEntity, insertPaymentType } from '@/protocols';
 
 async function getTicketById(ticketId: number) {
   return await prisma.ticket.findFirst({ where: { id: ticketId } });
@@ -15,7 +15,7 @@ async function getTicketEnrollmentId(ticketId: number) {
   });
 }
 
-async function getPaymenteByTikecketId(paymentId: number) {
+async function getPaymenteByTikecketId(paymentId: number): Promise<PaymentEntity> {
   return await prisma.payment.findFirst({ where: { id: paymentId } });
 }
 
@@ -36,24 +36,22 @@ async function getEnrollmentById(enrollmentId: number) {
 
 async function updateTicketById(ticketId: number) {
   return prisma.ticket.update({
-    where: {
-      id: ticketId,
-    },
+    where: { id: ticketId },
     data: {
-      status: 'PAID',
+      status: TicketStatus.PAID,
     },
   });
 }
 
-async function postPayment({ ticketId, cardData, value }: PaymentPost & { value: number }) {
-  return await prisma.payment.create({
-    data: {
-      ticketId,
-      cardIssuer: cardData.issuer,
-      cardLastDigits: String(cardData.number).slice(-4),
-      value: value,
-    },
-  });
+async function postPayment(ticketId: number, value: number, cardInfo: CardInfoType) {
+  const paymentData: insertPaymentType = {
+    ticketId,
+    value,
+    cardIssuer: cardInfo.issuer,
+    cardLastDigits: cardInfo.number.toString().slice(-4),
+  };
+
+  return prisma.payment.create({ data: paymentData });
 }
 
 const paymentsRepository = {

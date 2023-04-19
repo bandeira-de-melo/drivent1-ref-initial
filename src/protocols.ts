@@ -41,13 +41,12 @@ export type PaymentEntity = {
   id: number;
   ticketId: number;
   value: number;
-  cardIssuer: 'VISA' | 'MASTERCARD'; //VISA | MASTERCARD
+  cardIssuer: string; //VISA | MASTERCARD
   cardLastDigits: string;
   createdAt: Date;
   updatedAt: Date;
 };
-
-export type PaymentPost = {
+export type postPaymentType = {
   ticketId: number;
   cardData: {
     issuer: string;
@@ -56,4 +55,19 @@ export type PaymentPost = {
     expirationDate: Date;
     cvv: number;
   };
+};
+
+export type CardInfoType = {
+  issuer: string;
+  number: number;
+  name: string;
+  expirationDate: Date;
+  cvv: number;
+};
+
+export type insertPaymentType = {
+  ticketId: number;
+  value: number;
+  cardIssuer: string;
+  cardLastDigits: string;
 };

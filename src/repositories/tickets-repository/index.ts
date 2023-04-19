@@ -1,4 +1,4 @@
-import { Enrollment, Ticket, TicketType } from '@prisma/client';
+import { Enrollment, Ticket, TicketStatus, TicketType } from '@prisma/client';
 import { prisma } from '@/config';
 
 async function getTicketTypes() {
@@ -26,7 +26,7 @@ async function getTicketType(ticketTypeId: number): Promise<TicketType> {
 async function postTicket(ticketTypeId: number, enrollmentId: number): Promise<Ticket> {
   return await prisma.ticket.create({
     data: {
-      status: 'RESERVED',
+      status: TicketStatus.RESERVED,
       ticketTypeId: ticketTypeId,
       enrollmentId: enrollmentId,
       updatedAt: new Date().toISOString(),

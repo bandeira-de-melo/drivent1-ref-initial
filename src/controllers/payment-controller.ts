@@ -3,7 +3,7 @@ import httpStatus from 'http-status';
 import paymentsService from '@/services/payment-service';
 import { AuthenticatedRequest } from '@/middlewares';
 import { badRequestError } from '@/errors/bad-request-error';
-import { PaymentPost } from '@/protocols';
+import { postPaymentType } from '@/protocols';
 
 export async function getPayment(req: AuthenticatedRequest, res: Response) {
   const userId = req.userId as number;
@@ -28,15 +28,15 @@ export async function getPayment(req: AuthenticatedRequest, res: Response) {
 }
 
 export async function postPayment(req: AuthenticatedRequest, res: Response) {
-  const paymentData = req.body as PaymentPost;
+  const { ticketId, cardData } = req.body as postPaymentType;
   const userId = req.userId as number;
   try {
-    if (!paymentData.ticketId || !paymentData.cardData) {
+    if (!ticketId || !cardData) {
       throw badRequestError();
     }
 
-    const paymentResult = await paymentsService.postPayment(paymentData, userId);
-    res.status(200).send(paymentResult);
+    const paymentResult = await paymentsService.postPayment(cardData, ticketId, userId);
+    res.status(httpStatus.OK).send(paymentResult);
   } catch (error) {
     if (error.name === 'BadRequestError') {
       return res.sendStatus(httpStatus.BAD_REQUEST);
