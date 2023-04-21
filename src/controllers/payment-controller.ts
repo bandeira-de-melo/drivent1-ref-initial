@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import httpStatus from 'http-status';
-import paymentsService from '@/services/payment-service';
+import paymentsService from '@/services/payments-service';
 import { AuthenticatedRequest } from '@/middlewares';
 import { badRequestError } from '@/errors/bad-request-error';
 import { postPaymentType } from '@/protocols';
