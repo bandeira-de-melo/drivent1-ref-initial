@@ -1,5 +1,6 @@
 import { Enrollment, Ticket, TicketStatus, TicketType } from '@prisma/client';
 import { prisma } from '@/config';
+import { ticketInfoType } from '@/protocols';
 
 async function getTicketTypes() {
   return await prisma.ticketType.findMany({});
@@ -9,7 +10,7 @@ async function getUserErrolment(userId: number): Promise<Enrollment> {
   return await prisma.enrollment.findFirst({ where: { userId } });
 }
 
-async function getUserTicket(enrollmentId: number): Promise<Ticket | TicketType> {
+async function getUserTicket(enrollmentId: number): Promise<ticketInfoType> {
   return await prisma.ticket.findFirst({
     where: { enrollmentId },
     include: {
