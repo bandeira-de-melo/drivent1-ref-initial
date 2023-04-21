@@ -71,3 +71,37 @@ export type insertPaymentType = {
   cardIssuer: string;
   cardLastDigits: string;
 };
+
+export type ticketInfoType = {
+  id: number;
+  status: string; //RESERVED | PAID
+  ticketTypeId: number;
+  enrollmentId: number;
+  TicketType: {
+    id: number;
+    name: string;
+    price: number;
+    isRemote: boolean;
+    includesHotel: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type hotelResponseType = {
+  id: number;
+  name: string;
+  image: string;
+};
+
+export type Hotel = {
+  id: number;
+  name: string;
+  image: string;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+};
+
+export type postHotel = Omit<Hotel, 'id' | 'createdAt' | 'updatedAt'>;
