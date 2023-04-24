@@ -1,12 +1,13 @@
 import faker from '@faker-js/faker';
-import { Hotel, TicketType } from '@prisma/client';
+import { Hotel, Prisma, Ticket, TicketType } from '@prisma/client';
 import { prisma } from '@/config';
 
-export async function createHotel(params: Partial<Hotel> = {}): Promise<Hotel> {
+export async function createHotel(params: Partial<Prisma.HotelCreateInput> = {}): Promise<Hotel> {
   return await prisma.hotel.create({
     data: {
       name: params.name || faker.company.companyName(),
       image: params.image || faker.image.imageUrl(),
+      Rooms: params.Rooms,
     },
   });
 }
@@ -26,13 +27,35 @@ export async function createTicketTypeNotRemoteWithHotel(params: Partial<TicketT
   });
 }
 
+export async function createUserTicket(enrollmentId: number, ticketTypeId: number): Promise<Ticket> {
+  return prisma.ticket.create({
+    data: {
+      ticketTypeId,
+      enrollmentId,
+      status: 'PAID',
+    },
+  });
+}
+
 export async function createRoomsByHotelId(hotelId: number) {
   return await prisma.room.createMany({
-    data: {
-      name: faker.name.findName(),
-      capacity: faker.datatype.number(),
-      hotelId: hotelId,
-    },
+    data: [
+      {
+        name: faker.name.findName(),
+        capacity: faker.datatype.number(),
+        hotelId: hotelId,
+      },
+      {
+        name: faker.name.findName(),
+        capacity: faker.datatype.number(),
+        hotelId: hotelId,
+      },
+      {
+        name: faker.name.findName(),
+        capacity: faker.datatype.number(),
+        hotelId: hotelId,
+      },
+    ],
   });
 }
 
@@ -49,4 +72,5 @@ export default {
   createTicketTypeNotRemoteWithHotel,
   createRoomsByHotelId,
   getHotelWithRoomsById,
+  createUserTicket,
 };

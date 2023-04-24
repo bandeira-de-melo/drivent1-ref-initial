@@ -10,13 +10,23 @@ import {
   createTicket,
   createTicketTypeNotRemoteWithHotel,
   createUser,
+  createUserTicket,
 } from '../factories';
 import { cleanDb, generateValidToken } from '../helpers';
 import app, { init } from '@/app';
+import { disconnectDB } from '@/config';
 
 beforeAll(async () => {
   await init();
   await cleanDb();
+});
+
+beforeEach(async () => {
+  await cleanDb();
+});
+
+afterAll(async () => {
+  await disconnectDB();
 });
 
 const api = supertest(app);
@@ -50,14 +60,14 @@ describe('GET /hotels', () => {
     const token = await generateValidToken(user);
     const enrollment = await createEnrollmentWithAddress(user);
     const ticketType = await createTicketTypeNotRemoteWithHotel();
-    const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
+    await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
 
     const response = await api.get('/hotels').set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(httpStatus.PAYMENT_REQUIRED);
   });
 });
 
-describe('GET /hotels when token is valid', async () => {
+describe('GET /hotels when token is valid', () => {
   it('should respond with status 404 when user is not enrolled', async () => {
     const user = await createUser();
     const token = await generateValidToken(user);
@@ -68,12 +78,12 @@ describe('GET /hotels when token is valid', async () => {
   });
 
   it('should respond with status 200 and hotels list', async () => {
-    const hotel = await createHotel();
+    await createHotel();
     const user = await createUser();
     const token = await generateValidToken(user);
     const enrollment = await createEnrollmentWithAddress(user);
     const ticketType = await createTicketTypeNotRemoteWithHotel();
-    await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+    await createUserTicket(enrollment.id, ticketType.id);
 
     const response = await api.get('/hotels').set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
@@ -84,15 +94,15 @@ describe('GET /hotels when token is valid', async () => {
 describe('GET /hotels/:hotelId', () => {
   it('should return status 200 with hotel and rooms list', async () => {
     const hotel = await createHotel();
-    const room = await createRoomsByHotelId(hotel.id);
+    await createRoomsByHotelId(hotel.id);
     const user = await createUser();
     const token = await generateValidToken(user);
     const enrollment = await createEnrollmentWithAddress(user);
     const ticketType = await createTicketTypeNotRemoteWithHotel();
+    await createUserTicket(enrollment.id, ticketType.id);
 
     const response = await api.get(`/hotels/${hotel.id}`).set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
-    console.log(response.body);
   });
 });

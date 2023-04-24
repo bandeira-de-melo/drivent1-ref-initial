@@ -30,6 +30,13 @@ export async function getHotelAndRoomsByHotelId(req: AuthenticatedRequest, res: 
     const hotel = await hotelsService.getHotelAndRoomsByHotelId(hotelId, userId);
     res.status(httpStatus.OK).send(hotel);
   } catch (error) {
-    if (error.name === 'InvalidDataError') throw invalidDataError;
+    if (error.name === 'notFoundError') {
+      return res.send(error.message);
+    }
+    if (error.name === 'paymentRequiredError') {
+      return res.send(httpStatus.PAYMENT_REQUIRED);
+    } else {
+      return res.sendStatus(httpStatus.BAD_REQUEST);
+    }
   }
 }

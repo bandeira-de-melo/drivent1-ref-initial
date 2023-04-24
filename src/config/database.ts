@@ -8,3 +8,9 @@ export function connectDb(): void {
 export async function disconnectDB(): Promise<void> {
   await prisma?.$disconnect();
 }
+
+export default {
+  prisma,
+  connectDb,
+  disconnectDB,
+};

@@ -1,9 +1,16 @@
-import { Hotel, Prisma, PrismaClient } from '@prisma/client';
+import { Ticket, TicketType } from '@prisma/client';
 import { prisma } from '@/config';
 import { HotelWithRoomsType, hotelResponseType } from '@/protocols';
 
 export async function getHotelsList(): Promise<hotelResponseType[]> {
   return await prisma.hotel.findMany();
+}
+export async function getUserTicket(enrollmentId: number): Promise<Ticket> {
+  return prisma.ticket.findFirst({ where: { enrollmentId } });
+}
+
+export async function getUserTicketType(ticketTypeId: number): Promise<TicketType> {
+  return prisma.ticketType.findFirst({ where: { id: ticketTypeId } });
 }
 
 export async function getHotelWithRooms(hotelId: number): Promise<HotelWithRoomsType> {
@@ -23,6 +30,8 @@ export async function getHotelWithRooms(hotelId: number): Promise<HotelWithRooms
 const hotelsRepository = {
   getHotelsList,
   getHotelWithRooms,
+  getUserTicket,
+  getUserTicketType,
 };
 
 export default hotelsRepository;
