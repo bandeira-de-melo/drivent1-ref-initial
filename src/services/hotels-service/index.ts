@@ -1,11 +1,15 @@
+import { Ticket } from '@prisma/client';
 import ticketsService from '../tickets-service';
 import { paymentRequiredError } from '@/errors/payment-required-error';
 import { notFoundError } from '@/errors';
-import hotelsRepository from '@/repositories/hotelsRepository';
-import { Hotel } from '@/protocols';
+import hotelsRepository, { getHotelWithRooms } from '@/repositories/hotelsRepository';
 import { prisma } from '@/config';
+import enrollmentRepository from '@/repositories/enrollment-repository';
 
 export async function getHotelsList(userId: number) {
+  const userEnrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+  if (!userEnrollment) throw notFoundError();
+
   const ticketInfo = await ticketsService.getUserTicket(userId);
   if (!ticketInfo) throw notFoundError();
 
@@ -19,22 +23,22 @@ export async function getHotelsList(userId: number) {
   return await hotelsRepository.getHotelsList();
 }
 
-export async function getHotelAndRoomsByHotelId(hotelId: number) {
-  return await prisma.hotel.findFirst({
-    where: { id: hotelId },
-    include: { Rooms: true },
-  });
-}
+export async function getHotelAndRoomsByHotelId(hotelId: number, userId: number) {
+  const ticketInfo = await ticketsService.getUserTicket(userId);
+  if (!ticketInfo) throw notFoundError();
 
-export async function createHotelsList(hotelData: Omit<Hotel, 'id'>) {
-  return await prisma.hotel.createMany({
-    data: hotelData,
-  });
+  if (
+    ticketInfo.status !== 'PAID' ||
+    ticketInfo.TicketType.isRemote === true ||
+    ticketInfo.TicketType.includesHotel === false
+  ) {
+    throw paymentRequiredError();
+  }
+  return await hotelsRepository.getHotelWithRooms(hotelId);
 }
 
 const hotelsService = {
   getHotelsList,
-  createHotelsList,
   getHotelAndRoomsByHotelId,
 };
 

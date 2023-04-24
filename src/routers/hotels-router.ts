@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authenticateToken } from '@/middlewares';
-import { createHotelsList, getHotelAndRoomsByHotelId, getHotelsList } from '@/controllers';
+import { getHotelAndRoomsByHotelId, getHotelsList } from '@/controllers';
 
 const hotelsRounter = Router();
 
@@ -10,8 +10,6 @@ hotelsRounter
 
   .get('/', getHotelsList)
 
-  .get('/:hotelId', getHotelAndRoomsByHotelId)
-
-  .post('/', createHotelsList);
+  .get('/:hotelId', getHotelAndRoomsByHotelId);
 
 export { hotelsRounter };

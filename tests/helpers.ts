@@ -1,5 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 import { User } from '@prisma/client';
+import faker from '@faker-js/faker';
 
 import { createUser } from './factories';
 import { createSession } from './factories/sessions-factory';
@@ -15,6 +16,7 @@ export async function cleanDb() {
   await prisma.user.deleteMany({});
   await prisma.ticketType.deleteMany({});
   await prisma.hotel.deleteMany({});
+  await prisma.room.deleteMany({});
 }
 
 export async function generateValidToken(user?: User) {
@@ -25,3 +27,19 @@ export async function generateValidToken(user?: User) {
 
   return token;
 }
+
+//fake data to inject in test DB
+export const data = [
+  {
+    name: faker.name.findName(),
+    image: faker.image.imageUrl(),
+  },
+  {
+    name: faker.name.findName(),
+    image: faker.image.imageUrl(),
+  },
+  {
+    name: faker.name.findName(),
+    image: faker.image.imageUrl(),
+  },
+];
