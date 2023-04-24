@@ -105,3 +105,20 @@ export type Hotel = {
 };
 
 export type postHotel = Omit<Hotel, 'id' | 'createdAt' | 'updatedAt'>;
+
+export type Room = {
+  id: number;
+  name: string;
+  capacity: number;
+  hotelId: number;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+};
+export type HotelWithRoomsType = {
+  id: number;
+  name: string;
+  image: string;
+  Rooms: Room[];
+  createdAt: Date | string;
+  updatedAt: Date | string;
+};
